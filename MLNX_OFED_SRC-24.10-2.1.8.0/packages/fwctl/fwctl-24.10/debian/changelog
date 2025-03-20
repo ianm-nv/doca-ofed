@@ -1,3 +1,15 @@
+fwctl (24.10-OFED.24.10.2.1.8.1+2) noble; urgency=medium
+
+  * Add dh-dkms to build-depends
+
+ -- Ian May <ianm@nvidia.com>  Mon, 17 Mar 2025 11:52:42 -0500
+
+fwctl (24.10-OFED.24.10.2.1.8.1+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Sun, 16 Mar 2025 16:31:26 -0500
+
 fwctl (24.10-OFED.24.10.2.1.8.1) unstable; urgency=low
 
   * Initial release.

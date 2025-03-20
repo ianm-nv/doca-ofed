@@ -2,7 +2,7 @@ Source: fwctl
 Section: kernel
 Priority: optional
 Maintainer: Mohammad Kabat <mohammadkab@nvidia.com>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev, bzip2, dkms
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, bzip2, dkms, dh-dkms
 Standards-Version: 4.2.0
 Homepage: http://nvidia.com
 
