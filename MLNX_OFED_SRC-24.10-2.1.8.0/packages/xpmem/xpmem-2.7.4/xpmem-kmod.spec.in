@@ -1,0 +1,52 @@
+#define buildforkernels newest
+#define buildforkernels current
+#define buildforkernels akmod
+
+%define module xpmem
+%define version @PACKAGE_VERSION@
+
+%global debug_package %{nil}
+%define _unpackaged_files_terminate_build 0
+
+%if "%{?kernel_release}" == ""
+%define kernel_release %(uname -r)
+%endif
+
+Summary: XPMEM: Cross-partition memory kernel module package
+Name: %{module}-kmod-%{kernel_release}
+Version: %{version}
+Release: 0
+License: GPLv2
+Packager: Nathan Hjelm
+Source: %{module}-%{version}.tar.gz
+Group: System Environment/Kernel
+BuildRequires: kernel-devel
+Provides: xpmem-kmod
+
+%description
+XPMEM is a Linux kernel module that enables a process to map the
+memory of another process into its virtual address space. Source code
+can be obtained by cloning the Git repository, original Mercurial
+repository or by downloading a tarball from the link above.
+
+%prep
+%setup -n %{module}-%{version}
+
+%build
+./configure --with-kernelvers=%{kernel_release}
+make
+
+%install
+export INSTALL_MOD_PATH=$RPM_BUILD_ROOT
+export INSTALL_MOD_DIR=extra/%{module}
+make -C kernel modules_install
+mkdir -p $RPM_BUILD_ROOT/etc/udev/rules.d
+cp 56-xpmem.rules $RPM_BUILD_ROOT/etc/udev/rules.d
+find $RPM_BUILD_ROOT -name 'xpmem.*' | sed -e s@^$RPM_BUILD_ROOT@@ >filelist
+
+%files -f filelist
+/etc/udev/rules.d/56-xpmem.rules
+
+%post
+touch /etc/udev/rules.d/56-xpmem.rules
+depmod -a

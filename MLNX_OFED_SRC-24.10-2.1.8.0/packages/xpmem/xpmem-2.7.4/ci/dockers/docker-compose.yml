@@ -1,0 +1,50 @@
+# Run by 'docker compose build'
+
+version: "3.4"
+
+services:
+
+  centos7:
+    image: centos7:2
+    build:
+      context: .
+      network: host
+      dockerfile: centos.Dockerfile
+      args:
+        OS_VERSION: 7
+
+  centos8:
+    image: centos8:2
+    build:
+      context: .
+      network: host
+      dockerfile: centos.Dockerfile
+      args:
+        OS_VERSION: 8
+
+  ubuntu18.04:
+    image: ubuntu18.04:2
+    build:
+      context: .
+      network: host
+      dockerfile: ubuntu.Dockerfile
+      args:
+        OS_VERSION: 18.04
+
+  ubuntu20.04:
+    image: ubuntu20.04:2
+    build:
+      context: .
+      network: host
+      dockerfile: ubuntu.Dockerfile
+      args:
+        OS_VERSION: 20.04
+
+  ubuntu22.04:
+    image: ubuntu22.04:2
+    build:
+      context: .
+      network: host
+      dockerfile: ubuntu.Dockerfile
+      args:
+        OS_VERSION: 22.04

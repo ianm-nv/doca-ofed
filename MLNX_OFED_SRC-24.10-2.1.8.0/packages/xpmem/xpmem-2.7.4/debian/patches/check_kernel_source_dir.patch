@@ -1,0 +1,64 @@
+From f1ef63d53796b6d21763bd79abc18b6ba15021d6 Mon Sep 17 00:00:00 2001
+From: Tzafrir Cohen <nvidia@cohens.org.il>
+Date: Mon, 20 Mar 2023 12:03:38 +0200
+Subject: [PATCH] autoconf kernel: check in a separate kernel dir
+
+Some distribution kernels have a minimal configuration-specific partial
+kernel pointed by /lib/modules/<ver>/build and a more complete kernel
+tree pointed by /lib/modules/<ver>/source .
+
+Run tests autoconf tests using the "source" tree as well.
+
+Signed-off-by: Tzafrir Cohen <nvidia@cohens.org.il>
+---
+ m4/ac_path_kernel_source.m4 | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
+
+diff --git a/m4/ac_path_kernel_source.m4 b/m4/ac_path_kernel_source.m4
+index b4bc1f5..b30d705 100644
+--- a/m4/ac_path_kernel_source.m4
++++ b/m4/ac_path_kernel_source.m4
+@@ -30,6 +30,15 @@ AC_DEFUN([AC_PATH_KERNEL_SOURCE_SEARCH],
+         break
+       fi;
+     done
++    if test "$kerneldir" = /lib/modules/${vers}/build/ -a \
++      -r "$kerneldir/Makefile" -a \
++      `wc -l <"$kerneldir/Makefile"` -lt 100 -a \
++      -r "/lib/modules/${vers}/source/Makefile"
++    then
++      kerneldir_source="/lib/modules/${vers}/source"
++    else
++      kerneldir_source="$kerneldir"
++    fi
+   fi
+ 
+   if test x${no_kernel} = xyes; then
+@@ -102,16 +111,19 @@ AC_DEFUN([AC_KERNEL_CHECKS],
+                            -e s/sparc64.*/sparc/ \
+                            -e s/s390x/s390/)
+   save_CPPFLAGS="$CPPFLAGS"
+-  CPPFLAGS="-include $kerneldir/include/linux/kconfig.h \
+-            -include $kerneldir/include/linux/compiler.h \
++  CPPFLAGS="-include $kerneldir_source/include/linux/kconfig.h \
++            -include $kerneldir_source/include/linux/compiler.h \
+             -D__KERNEL__ \
+             -DKBUILD_MODNAME=\"xpmem_configure\" \
+             -I$kerneldir/include \
+-            -I$kerneldir/include/uapi \
+-            -I$kerneldir/arch/$srcarch/include \
+-            -I$kerneldir/arch/$srcarch/include/uapi \
++            -I$kerneldir_source/include \
++            -I$kerneldir_source/include/uapi \
++            -I$kerneldir_source/arch/$srcarch/include \
++            -I$kerneldir_source/arch/$srcarch/include/uapi \
+             -I$kerneldir/arch/$srcarch/include/generated \
+             -I$kerneldir/arch/$srcarch/include/generated/uapi \
++            -I$kerneldir_source/arch/$srcarch/include/generated \
++            -I$kerneldir_source/arch/$srcarch/include/generated/uapi \
+             $CPPFLAGS"
+ 
+   AC_CHECK_MEMBERS([struct task_struct.cpus_mask], [], [],
+-- 
+2.25.1
+

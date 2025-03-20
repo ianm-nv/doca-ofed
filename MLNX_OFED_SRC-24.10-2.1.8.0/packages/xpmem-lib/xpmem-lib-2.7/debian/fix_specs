@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Prepare a commit to set version
+
+SPEC_EDIT=xpmem-lib.spec
+SPEC_DELETE=xpmem-kmod.spec
+
+me=${0##*/}
+name=${SPEC_EDIT%.*}
+
+set -e
+sed -i -e "s/$SPEC_DELETE/#/" Makefile.am
+rm -f $SPEC_DELETE

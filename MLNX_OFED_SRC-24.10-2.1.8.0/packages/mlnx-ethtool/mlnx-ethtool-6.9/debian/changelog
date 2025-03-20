@@ -1,0 +1,5 @@
+mlnx-ethtool (6.9-OFED.24.07.0.1.9) unstable; urgency=low
+
+  * Add debian support.
+
+ -- Mohammad Kabat <mohammadkab@nvidia.com>  Sun,  11 Dec 2022 14:45:05 +0200

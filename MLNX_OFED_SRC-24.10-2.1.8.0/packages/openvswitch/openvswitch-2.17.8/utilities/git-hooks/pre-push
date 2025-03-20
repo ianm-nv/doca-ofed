@@ -1,0 +1,53 @@
+#! /usr/bin/env sh
+# vi: ft=sh textwidth=999
+
+# This hook executes checkpatch on the commit from the
+# remote tracking branch until the branch being pushed.
+# The verification can be bypassed by using --no-verify.
+
+warn() {
+    for arg in "$@"
+    do
+        echo "(pre-push) $arg"
+    done
+}
+
+error() {
+    warn "$@"
+    warn "You can bypass this check using '--no-verify'."
+    exit 1
+}
+
+current=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+remote=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2> /dev/null)
+
+if [ ! "$remote" ]; then
+    if git branch -la | grep -q origin/nv-next; then
+        warn "Assuming 'origin/nv-next' as upstream tracking branch."
+        remote='origin/nv-next'
+    else
+        error "No remote tracking branch found." \
+              "Use 'git branch -u <remote>/<branch>' to set it."
+    fi
+fi
+
+n=$(git log --oneline ${remote}.. 2> /dev/null | wc -l)
+
+if [ ! "$n" ] || [ "$n" = 0 ]; then
+    if [ "$current" = "nv-next" ]; then
+        exit 0
+    fi
+    error "No commits to check." \
+          "The ref '$remote' might not be a proper ancestor." \
+          "Use 'git branch -u <remote>/<branch>' to modify it."
+fi
+
+# First time, quietly. Only if errors are found,
+# then a second time, with details.
+CHECKPATCH_OPTIONS="-S --skip-gerrit-change-id -$n"
+if ./utilities/checkpatch.py -q $CHECKPATCH_OPTIONS | grep -qe 'ERROR\|WARNING'; then
+    ./utilities/checkpatch.py $CHECKPATCH_OPTIONS
+    error
+fi
+
+exit 0

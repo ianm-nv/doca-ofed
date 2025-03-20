@@ -1,0 +1,5 @@
+fwctl (24.10-OFED.24.10.2.1.8.1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Mohammad Kabat <mohammadkab@nvidia.com>  Sun, 28 Jul 2024 17:30:53 +0200

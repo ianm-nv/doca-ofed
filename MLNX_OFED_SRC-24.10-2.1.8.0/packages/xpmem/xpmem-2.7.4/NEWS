@@ -1,0 +1,48 @@
+#
+# Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES, All rights reserved.
+#
+# See file LICENSE for terms.
+#
+
+## Current
+### Features:
+#### Kernel driver:
+### Bugfixes:
+
+## 2.7.4 (October 16, 2024)
+### Features:
+#### Kernel driver:
+ * Harden kernel configuration detection
+ * Add user-supplied kernel compile flags option
+ * Add DKMS DEB kernel package generation
+ * Add KMOD RPM kernel package generation
+ * Add DKMS RPM kernel package generation
+#### Userspace:
+ * Add userspace RPM packaging
+ * Add userspace DEB packaging
+### Bugfixes:
+ * Fixed DKMS to support build and install for multiple kernel sources
+ * Fixed get_user_pages_remote detection in case of related backports
+ * Fixed PTE/PMD/PUD macros detection for kernel 6.9 onwards
+ * Fixed various build warnings
+ * Fixed xpmem segments created twice
+ * Fixed kernel source search path on RHEL8
+ * Fixed kernel version detection when not specified
+ * Fixed userspace-only build by not running kernel checks
+
+## 2.7.3 (October 5, 2023)
+### Bugfixes:
+ * Fixed compilation on kernel 6.5 onwards
+ * Fixed xpmem segments created twice
+
+## 2.7.2 (July 12, 2023)
+### Bugfixes:
+ * Fixed compilation on kernel 6.3 onwards
+
+## 2.7.0 (June 13, 2023)
+### Features:
+#### Kernel driver:
+ * Added faulting of multiple pages at once, forward and backward
+### Bugfixes:
+ * Added compilation fixes for PPC on Ubuntu 18.04
+ * Fixed vma_iterator compilation issue on kernel 6.1 onwards

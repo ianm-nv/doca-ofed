@@ -1,0 +1,11 @@
+This package build:
+* xpmem: user-space tools
+* xpmem-dkms: DKMS packaging
+* xpmem-modules: pre-built modules for a specific kernel
+
+By default, the package xpmem-modules will be empty.
+However, with the build profile 'modules' (dpkg-buildpackage -Pmodules
+or setting DEB_BUILD_PROFILES="modules"), the dkms package is empty and
+the modules package includes modules for a kernel. By default, running
+kernel (uname -r). But this can be overriden with wither environment
+variables KVERSION and KSRC.

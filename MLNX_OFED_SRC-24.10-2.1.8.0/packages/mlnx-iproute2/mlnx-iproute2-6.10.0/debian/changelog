@@ -1,0 +1,5 @@
+mlnx-iproute2 (6.10.0-OFED.24.10.2.1.3) unstable; urgency=low
+
+  * Add debian support.
+
+ -- Mohammad Kabat <mohammadkab@nvidia.com>  Sun, 11 Dec 2022 10:41:43 -0600

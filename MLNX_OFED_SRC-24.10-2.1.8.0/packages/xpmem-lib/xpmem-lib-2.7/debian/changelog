@@ -1,0 +1,5 @@
+xpmem-lib (2.7-OFED.23.10.0.0.1) unstable; urgency=medium
+
+  * Initial release.
+
+ -- Tzafrir Cohen <nvidia@cohens.org.il>  Mon, 13 Feb 2023 17:50:36 +0200

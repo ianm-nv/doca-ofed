@@ -1,0 +1,162 @@
+#!/bin/bash
+usage()
+{
+	cat <<EOF
+Usage: $0 [options]
+
+Options:
+    -s       Show package name and version number.
+    -n       Show numerical version number only.
+    -l       List installed packages details (Default option).
+EOF
+}
+if [ "X$1" == "X-s" ]; then echo OFED-internal-24.10-2.1.8:; exit 0; fi
+if [ "X$1" == "X-n" ]; then echo 24.10-2.1.8; exit 0; fi
+if [ "X$1" != "X-l" ] && [ "X$1" != "X" ]; then usage; exit 1; fi
+
+cat << EOF
+OFED-internal-24.10-2.1.8:
+
+clusterkit:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/clusterkit-1.14.462-1.2410068.src.rpm
+
+dpcp:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/dpcp-1.1.50-1.2410068.src.rpm
+
+fwctl:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+hcoll:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/hcoll-4.8.3230-1.2410068.src.rpm
+
+ibarr:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/ibarr-0.1.3-1.2410068.src.rpm
+
+ibdump:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/ibdump-6.0.0-1.2410068.src.rpm
+
+ibsim:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/ibsim-0.12-1.2410068.src.rpm
+
+ibutils2:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/ibutils2-2.1.1-0.21902.MLNX20241029.g46cf6278.2410068.src.rpm
+
+iser:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+isert:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+kernel-mft:
+mlnx_ofed_mft/kernel-mft-4.30.1-113.src.rpm
+
+knem:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/knem-1.1.4.90mlnx3-OFED.23.10.0.2.1.1.src.rpm
+
+libvma:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/libvma-9.8.60-1.src.rpm
+
+libxlio:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/libxlio-3.40.2-1.src.rpm
+
+mlnx-dpdk:
+https://github.com/Mellanox/dpdk.org mlnx_dpdk_22.11_2410_lts
+commit 998523624e47449a54ad11de0077195258ce54b1
+mlnx-en:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+mlnx-ethtool:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/mlnx-ethtool-6.9-1.2410068.src.rpm
+
+mlnx-iproute2:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/iproute2.git mlnx_ofed_24_10
+commit a8c0def7cfb195a7fa735ed093aaa8688c1ab908
+mlnx-nfsrdma:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+mlnx-nvme:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+mlnx-ofa_kernel:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+mlnx-tools:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/mlnx-tools-24.10-0.2410068.src.rpm
+
+mlx-steering-dump:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/mlx-steering-dump-1.0.0-0.2410068.src.rpm
+
+mpitests:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/mpitests-3.2.24-2ffc2d6.2410068.src.rpm
+
+multiperf:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/multiperf-3.0-3.0.2410068.src.rpm
+
+ofed-docs:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/ofed-docs.git mlnx_ofed-4.0
+commit 3d1b0afb7bc190ae5f362223043f76b2b45971cc
+
+openmpi:
+mlnx_ofed_ompi_1.8/openmpi-4.1.7rc1-1.e4d9b16.src.rpm
+
+opensm:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/opensm-5.21.0.MLNX20241126.d9aa3dff-0.1.2410114.src.rpm
+
+openvswitch:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/openvswitch-2.17.8-1.2410068.src.rpm
+
+perftest:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/perftest-24.10.0-0.65.g9093bae.2410068.src.rpm
+
+rdma-core:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/rdma-core-2410mlnx54-1.2410068.src.rpm
+
+rshim:
+/sw_mc_soc_release/packages//rshim-2.1.10-0.g4f69018.src.rpm
+
+sharp:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/sharp-3.9.0.MLNX20241029.7a20b607-1.2410068.src.rpm
+
+sockperf:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/sockperf-3.10-0.git5ebd327da983.2410068.src.rpm
+
+srp:
+https://git-nbu.nvidia.com/r/a/mlnx_ofed/mlnx-ofa_kernel-4.0.git mlnx_ofed_24_10
+commit 57699cda8ac0958195add960e12237251f5d04ab
+
+ucx:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/ucx-1.18.0-1.2410068.src.rpm
+
+xpmem-lib:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/xpmem-lib-2.7-0.2310055.src.rpm
+
+xpmem:
+/sw/release/mlnx_ofed/IBHPC/OFED-internal-24.10-1.1.4/SRPMS/xpmem-2.7.4-1.2410068.src.rpm
+
+EOF
+
+echo
+echo Installed Packages:
+echo -------------------
+
+pkglist1=
+pkglist2=
+
+if [ -x /usr/bin/dpkg ]; then
+    pkglist1=$(dpkg --list | grep -E "#DEB_PACKAGES_LIST#")
+fi
+
+if (which rpm >/dev/null 2>&1); then
+    pkglist2=$(rpm -qa --queryformat "[%{NAME}]
+" | grep -E "kernel-ib|clusterkit|dpcp|^fwctl$|kmod-fwctl|fwctl.*kmp|hcoll|ibarr|ibdump|ibsim|ibutils2|^iser|kmod-iser|iser.*kmp|^isert|kmod-isert|isert.*kmp|kernel-mft|knem|libvma|libxlio|mlnx-dpdk|mlnx-en|mlnx-ethtool|mlnx-iproute2|mlnx-nfsrdma|mlnx-nvme|mlnx-ofa_kernel|mlnx-tools|mlx-steering-dump|mpitests|multiperf|ofed-docs|openmpi|opensm|openvswitch|perftest|rdma-core|ibacm|libibcm|libibumad|libibverbs|librdmacm|srp_daemon|infiniband-diags|python3-pyverbs|rshim|sharp|sockperf|^srp$|kmod-srp|srp.*kmp|ucx|xpmem-lib|xpmem|neohost-backend|neohost-sdk")
+fi
+
+echo -e "$pkglist1"
+echo -e "$pkglist2"

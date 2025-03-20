@@ -1,0 +1,20 @@
+general:
+    exclude:
+        # Exclude all files not in lib, ofproto, vswitchd folder except for Makefile.am
+        - "^(?!lib|ofproto|vswitchd(?:\/|$)|Makefile\\.am$).*"
+        # Exclude all git folder
+        - "\\.git.*"
+        # Exclude files of types json, conf, etc
+        - ".*\\.(json|conf|profile|hex|dep|cfg|man|pem|o|lo)$"
+
+apache-2.0:
+    include:
+        - "lib/*"
+        - "ofproto/*"
+        - "vswitchd/*"
+        - "Makefile.am"
+    exclude:
+        # Exclude files in directories lib, ofproto and vswitchd which do not end in .c or .h
+        - "^lib\/[^/]*(?<!\\.(c|h))$"
+        - "^ofproto\/[^/]*(?<!\\.(c|h))$"
+        - "^vswitchd\/[^/]*(?<!\\.(c|h))$"

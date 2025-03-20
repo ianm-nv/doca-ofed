@@ -1,0 +1,43 @@
+# Note: the same file as control.no_dkms. The irrelevant
+# package will be empty and should be ignored
+Source: xpmem
+Priority: optional
+Maintainer: Tzafrir Cohen <nvidia@cohens.org.il>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.4.1
+Section: kernel
+Homepage: https://github.com/openucx/xpmem/
+#Vcs-Browser: https://salsa.debian.org/debian/xpmem-lib
+#Vcs-Git: https://salsa.debian.org/debian/xpmem-lib.git
+
+Package: xpmem
+Section: kernel
+Architecture: all
+Depends: ${misc:Depends}
+Description: kernel module for user-space process remapping - scripts
+ XPMEM is a Linux kernel module that enables a process to map the
+ memory of another process into its virtual address space.
+ .
+ This package includes required user-space files for using the module.
+
+Package: xpmem-dkms
+Architecture: all
+Build-Profiles: <!modules>
+Depends: ${misc:Depends}
+Description: kernel module for user-space process remapping - DKMS
+ XPMEM is a Linux kernel module that enables a process to map the
+ memory of another process into its virtual address space.
+ .
+ This package includes a DKMS package for installing the module.
+
+Package: xpmem-modules
+Architecture: any
+Build-Profiles: <modules>
+Depends: ${misc:Depends}, ${shlib:Depends}
+Multi-Arch:same
+Description: kernel module for user-space process remapping - DKMS
+ XPMEM is a Linux kernel module that enables a process to map the
+ memory of another process into its virtual address space.
+ .
+ This package includes the pre-built kernel modules:
+ @KERNEL_DIR@ .

@@ -1,0 +1,77 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+-include /usr/share/dpkg/pkg-info.mk
+
+WITH_MODULES = $(filter modules,${DEB_BUILD_PROFILES})
+
+kernel_source_args = 
+ifeq "" "$(filter command environment,$(origin kernelver))"
+kernelver = $(shell uname -r)
+else
+kernel_source_args += --with-kernelvers=$(kernelver)
+endif
+
+ifeq "" "$(filter command environment,$(origin kernel_source_dir))"
+kernel_source_dir = /lib/modules/$(kernelver)/build
+else
+kernel_source_args += --with-kerneldir=$(kernel_source_dir)
+endif
+kernelver_real = $(shell make M=$$PWD -C $(kernel_source_dir) kernelrelease)
+kernelver1 = $(subst _,-,$(kernelver))
+
+%:
+ifeq (,$(WITH_MODULES))
+	dh $@ --with dkms,autoreconf
+else
+	dh $@ --with autoreconf
+endif
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(kernel_source_args)
+
+override_dh_auto_build:
+ifneq (,$(WITH_MODULES))
+	cd kernel && make
+endif
+	cp 56-xpmem.rules debian/xpmem.udev
+
+override_dh_auto_test:
+
+override_dh_auto_install:
+ifeq (,$(WITH_MODULES))
+	rm -f xpmem-*.tar.gz
+	touch xpmem-lib.spec xpmem-kmod.spec
+	make dist-gzip
+	rm xpmem-lib.spec xpmem-kmod.spec
+	mkdir -p debian/xpmem-dkms/usr/src
+	tar xf xpmem-${DEB_VERSION_UPSTREAM}.tar.gz -C debian/xpmem-dkms/usr/src
+else
+	cd kernel && make install DESTDIR=$(CURDIR)/debian/tmp
+	@if [ -d debian/tmp/usr/lib/modules ]; then \
+		rm -rf debian/tmp/lib/modules; \
+		mkdir -p debian/tmp/lib; \
+		mv -v debian/tmp/usr/lib/modules debian/tmp/lib/ ; \
+	fi
+endif
+
+override_dh_dkms:
+	dh_dkms -V
+
+ifneq (,$(WITH_MODULES))
+override_dh_gencontrol:
+	dh_gencontrol -- -v$(DEB_VERSION).kver.$(kernelver1)
+	sed -i -e "s|@KERNEL_DIR@|/lib/modules/$(kernelver)|" debian/xpmem-modules/DEBIAN/control
+endif

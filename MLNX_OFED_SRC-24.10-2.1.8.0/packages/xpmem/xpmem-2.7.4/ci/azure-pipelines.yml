@@ -1,0 +1,298 @@
+trigger: none
+pr:
+  branches:
+    include:
+    - master
+    - v*.*.x
+  paths:
+    exclude:
+    - .git*
+    - /**/*.md
+    - NEWS
+    - AUTHORS
+
+resources:
+  containers:
+    - container: centos7
+      image: rdmz-harbor.rdmz.labs.mlnx/xpmem/x86_64/centos7:2
+      options: -v /hpc/local:/hpc/local -v /auto/sw_tools:/auto/sw_tools
+    - container: centos8
+      image: rdmz-harbor.rdmz.labs.mlnx/xpmem/x86_64/centos8:2
+    - container: ubuntu18
+      image: rdmz-harbor.rdmz.labs.mlnx/xpmem/x86_64/ubuntu18.04:2
+    - container: ubuntu20
+      image: rdmz-harbor.rdmz.labs.mlnx/xpmem/x86_64/ubuntu20.04:2
+    - container: ubuntu22
+      image: rdmz-harbor.rdmz.labs.mlnx/xpmem/x86_64/ubuntu22.04:2
+    - container: fedora
+      image: rdmz-harbor.rdmz.labs.mlnx/ucx/fedora33:1
+
+stages:
+  - stage: Codestyle
+    jobs:
+      - job: format
+        displayName: Format code
+        pool:
+          name: MLNX
+          demands:
+          - ucx_docker
+        container: fedora
+        steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 100
+          - bash: |
+              set -x
+              BASE_SOURCEVERSION=$(git rev-parse HEAD^)
+              echo "Checking code format on diff ${BASE_SOURCEVERSION}..${BUILD_SOURCEVERSION}"
+              PATCH=$(git-clang-format --diff ${BASE_SOURCEVERSION} ${BUILD_SOURCEVERSION} ./)
+              if [ "$PATCH" = "no modified files to format" ]; then
+                  exit
+              fi
+              echo "$PATCH" | git apply
+              if ! git diff --quiet --exit-code; then
+                set +x
+                echo "##vso[task.complete result=SucceededWithIssues;]DONE Code is not formatted correctly"
+              fi
+            condition: eq(variables['Build.Reason'], 'PullRequest')
+            displayName: Check gtest code format
+            workingDirectory: $(System.DefaultWorkingDirectory)/test/gtest
+
+  - stage: Coverity
+    dependsOn: Codestyle
+    jobs:
+      - template: coverity.yml
+
+  - stage: Docker
+    displayName: Build on Docker
+    dependsOn: Codestyle
+    jobs:
+      - job: Build
+        pool:
+          name: MLNX
+          demands:
+            - ucx_docker
+
+        strategy:
+          matrix:
+            centos7:
+              build_container: centos7
+            centos8:
+              build_container: centos8
+            ubuntu18:
+              build_container: ubuntu18
+            ubuntu20:
+              build_container: ubuntu20
+            ubuntu22:
+              build_container: ubuntu22
+        container: $[ variables['build_container'] ]
+
+        steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 100
+
+          - bash: |
+              source ./ci/lib.sh
+              kernel_ver=$(centos_kernel_version)
+              clean_configure /usr/src/kernels/$kernel_ver
+              make
+            displayName: Build on CentOS
+            condition: contains(variables['build_container'], 'centos')
+
+          - bash: |
+              source ./ci/lib.sh
+              kernel_ver=$(debian_kernel_version)
+              clean_configure /usr/src/$kernel_ver
+              make
+            displayName: Build on Ubuntu
+            condition: contains(variables['build_container'], 'ubuntu')
+
+          - bash: |
+              source ./ci/lib.sh
+              clean_userspace_configure
+              make
+            displayName: Build on CentOS without kernel module
+            condition: contains(variables['build_container'], 'centos')
+
+          - bash: |
+              source ./ci/lib.sh
+              clean_userspace_configure --enable-gtest
+              make
+            displayName: Build on Ubuntu without kernel module
+            condition: contains(variables['build_container'], 'ubuntu')
+
+          - bash: |
+              source ./ci/lib.sh
+              clean_userspace_configure
+              make dist-gzip
+
+              mkdir {BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+              mv xpmem-*.tar.* ./SOURCES/
+              rpm -qa | grep kernel-devel-
+              for kernel_ver in $(centos_kernel_versions); do
+                  rpmbuild --define "_topdir $PWD" --define "kernel_release $kernel_ver" -ba xpmem-kmod.spec
+              done
+
+              ls -alrt RPMS/*/xpmem-kmod*.rpm
+              ls -alrt SRPMS/xpmem-kmod*.src.rpm
+              rpm -qplvi RPMS/*/xpmem-kmod*.rpm
+              rpm -qplvi SRPMS/xpmem-kmod*.src.rpm
+            displayName: KMOD packaging on CentOS
+            condition: contains(variables['build_container'], 'centos')
+
+          - bash: |
+              source ./ci/lib.sh
+              dkms_workaround
+              clean_userspace_configure
+              make dist-gzip
+
+              sudo dkms ldtarball ./xpmem-*.tar.gz
+              dkms status -m xpmem
+              version=$(dkms_xpmem_version)
+              kernel_ver=$(centos_kernel_version)
+              sudo dkms build xpmem/${version} --kernelsourcedir=/usr/src/kernels/${kernel_ver} -k ${kernel_ver}
+              # Workaround DKMS limitation
+              sudo dkms build xpmem/${version} --kernelsourcedir=/usr/src/kernels/${kernel_ver} -k $(uname -r)
+
+              rpmbuild --define "_topdir $PWD" -bb xpmem-dkms.spec
+
+              sudo dkms remove "xpmem/$version" --all || true
+              sudo rm -rf /var/lib/dkms/xpmem/$version/
+              sudo rm -rf /usr/src/xpmem-*
+
+              sudo rpm -qplvi RPMS/noarch/xpmem-${version}-dkms.noarch.rpm
+            displayName: DKMS packaging on CentOS
+            condition: contains(variables['build_container'], 'centos')
+
+          - bash: |
+              source ./ci/lib.sh
+              dkms_workaround
+              clean_userspace_configure
+              make dist-gzip
+
+              sudo dkms ldtarball ./xpmem-*.tar.gz
+              dkms status -m xpmem
+              version=$(dkms_xpmem_version)
+              kernel_ver=$(debian_kernel_version)
+              kernel_rel=$(echo "$kernel_ver" | sed -e 's@linux-headers-@@')
+              sudo dkms build "xpmem/$version" --kernelsourcedir=/usr/src/${kernel_ver} -k ${kernel_rel}
+              dkms status -m xpmem
+              sudo dkms mkdeb "xpmem/$version" --source-only
+              sudo dkms mkbmdeb "xpmem/$version" --all
+              cp /var/lib/dkms/xpmem/$version/deb/xpmem-dkms_${version}_*.deb ./
+              cp /var/lib/dkms/xpmem/$version/bmdeb/xpmem-modules-*.deb ./
+              sudo dkms remove "xpmem/$version" --all || true
+              sudo rm -rf /var/lib/dkms/xpmem/$version/deb/*
+              sudo rm -rf /usr/src/xpmem-*
+
+              sudo dpkg -i xpmem-dkms_${version}_*.deb
+              sudo dpkg --contents xpmem-modules-*.deb
+            displayName: DKMS packaging on Ubuntu
+            condition: contains(variables['build_container'], 'ubuntu')
+
+          - bash: |
+              source ./ci/lib.sh
+              clean_userspace_configure
+              make dist-gzip
+
+              tarball="$(ls xpmem-*.tar.gz)"
+              tar zxf "$tarball"
+              cd "${tarball%.tar.gz}"
+              dpkg-buildpackage --build=binary -uc
+              cd -
+              dpkg --contents libxpmem_*.deb
+              dpkg --contents libxpmem-dev_*.deb
+              dpkg --contents libxpmem-dbgsym_*.ddeb
+
+              sudo dpkg -i libxpmem_*.deb
+              sudo dpkg -i libxpmem-dev_*.deb
+              echo -e '#include <xpmem.h>\n int main() { (void)xpmem_version(); return 0; }' | gcc -xc - -lxpmem -o dump
+              ldd dump
+              ./dump
+            displayName: DEB userspace packaging on Ubuntu
+            condition: contains(variables['build_container'], 'ubuntu')
+
+          - bash: |
+              source ./ci/lib.sh
+              clean_userspace_configure
+              make dist-gzip
+
+              sed -i '/BuildRequires/d' xpmem.spec
+
+              mkdir {BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+              mv xpmem-*.tar.* ./SOURCES/
+              rpmbuild --define "_topdir $PWD" -ba xpmem.spec
+              find RPMS SRPMS
+            displayName: RPM userspace packaging on Ubuntu
+            condition: contains(variables['build_container'], 'ubuntu18')
+
+  - stage: VMs
+    displayName: Build & Test on VMs
+    dependsOn: Codestyle
+    jobs:
+      - job: Test
+        timeoutInMinutes: 240
+        workspace:
+          clean: all
+        pool:
+          name: MLNX
+          demands:
+            - ucx_vagrant
+
+        strategy:
+          matrix:
+            ubuntu2310:
+              BOX_NAME: ubuntu2310
+            ubuntu2204:
+              BOX_NAME: ubuntu2204
+            ubuntu1804:
+              BOX_NAME: ubuntu1804
+            ubuntu20:
+              BOX_NAME: ubuntu2004
+            centos7:
+              BOX_NAME: centos7
+
+        steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 100
+    
+          - bash: |
+              set -x
+              export VAGRANT_HOME=/opt/vagrant_home
+              vagrant up
+            displayName: Bring up VM
+            workingDirectory: $(System.DefaultWorkingDirectory)/ci/vm/
+
+          - bash: |
+              vagrant ssh -- -t '
+                cd xpmem/test/share
+                sudo ./run.sh
+              '
+            displayName: Old tests
+            workingDirectory: $(System.DefaultWorkingDirectory)/ci/vm/
+
+          - bash: |
+              vagrant ssh -- -t '
+                sudo ./xpmem/test/gtest/gtest
+              '
+            displayName: Gtest
+            workingDirectory: $(System.DefaultWorkingDirectory)/ci/vm/
+
+          - bash: |
+              set -x
+              hostname
+              export VAGRANT_HOME=/opt/vagrant_home
+              vagrant destroy -f
+              vagrant global-status --prune
+              set +e
+              virsh destroy vm_${BOX_NAME}
+              virsh undefine vm_${BOX_NAME}
+              sudo rm -rf /var/lib/libvirt/images/*
+              virsh pool-destroy  default
+              virsh pool-delete   default
+              virsh pool-undefine default
+            condition: always()
+            displayName: Bring down VM
+            workingDirectory: $(System.DefaultWorkingDirectory)/ci/vm/
