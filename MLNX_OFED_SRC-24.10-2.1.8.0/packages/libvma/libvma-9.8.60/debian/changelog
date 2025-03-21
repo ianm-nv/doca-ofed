@@ -1,3 +1,10 @@
+libvma (9.8.60-1+3) noble; urgency=medium
+
+  * Prepare for signing.
+  * Update changelog.in
+
+ -- Ian May <ianm@nvidia.com>  Thu, 20 Mar 2025 16:26:24 -0500
+
 libvma (9.8.60-1) release; urgency=low
 
   * Please refer to CHANGES for full changelog.
