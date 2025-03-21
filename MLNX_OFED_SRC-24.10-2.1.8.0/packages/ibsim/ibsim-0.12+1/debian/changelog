@@ -1,3 +1,9 @@
+ibsim (0.12+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Wed, 19 Mar 2025 16:28:45 -0500
+
 ibsim (0.12) unstable; urgency=low
 
   * New upstream release.
