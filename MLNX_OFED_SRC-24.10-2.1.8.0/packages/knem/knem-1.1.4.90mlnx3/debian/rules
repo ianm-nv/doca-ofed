@@ -16,8 +16,6 @@
 #export DH_VERBOSE=1
 
 WITH_DKMS ?= 1
-MLXNUMC = $(shell grep ^processor /proc/cpuinfo | wc -l)
-NJOBS ?= $(shell if [ $(MLXNUMC) -lt 16 ]; then echo $(MLXNUMC); else echo 16; fi)
 
 pname:=knem
 ifeq ($(WITH_DKMS),1)
@@ -33,7 +31,7 @@ prel := $(shell dpkg-parsechangelog | sed -n 's/^Version: *\([^-]\+\)-\(.\+\)/\2
 DIST_NAME := $(shell lsb_release -si)
 DIST_RELEASE := $(DIST_NAME)/$(shell lsb_release -sc)
 
-kernelver ?= $(shell uname -r)
+kernelver ?= $(shell find /lib/modules/ -name build | cut -d '/' -f 4 | sort | tail -1)
 kernelver1 = $(shell echo $(kernelver) | sed -e 's/_/-/g')
 kernel_source_dir ?= "/lib/modules/$(kernelver)/build"
 kernel_source_dir_soruce ?= "/lib/modules/$(kernelver)/source"
@@ -67,7 +65,7 @@ else
 endif
 
 override_dh_auto_build:
-	make -j$(NJOBS)
+	make -j$(nproc)
 
 override_dh_auto_test:
 

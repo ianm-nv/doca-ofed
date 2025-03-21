@@ -2,7 +2,7 @@ Source: knem
 Section: kernel
 Priority: optional
 Maintainer: Brice Goglin <Brice.Goglin@inria.fr>
-Build-Depends: debhelper (>= 9.0.0), dh-autoreconf, bzip2, dkms, pkg-config
+Build-Depends: debhelper (>= 9.0.0), dh-autoreconf, bzip2, dkms, pkg-config, dh-dkms, linux-headers-generic | linux-headers
 Standards-Version: 4.0
 Homepage: http://runtime.bordeaux.inria.fr/knem/
 

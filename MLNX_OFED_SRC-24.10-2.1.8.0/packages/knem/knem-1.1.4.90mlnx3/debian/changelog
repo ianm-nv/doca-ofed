@@ -1,3 +1,17 @@
+knem (1.1.4.90mlnx3-OFED.23.10.0.2.1.1+2) noble; urgency=medium
+
+  * Add Build-Depends linux-headers
+  * Modify debian/rules for building correctly in a chroot
+
+ -- Ian May <ianm@nvidia.com>  Thu, 20 Mar 2025 11:27:15 -0500
+
+knem (1.1.4.90mlnx3-OFED.23.10.0.2.1.1+1) noble; urgency=medium
+
+  * Prepare for signing.
+  * Add Build-Depends dh-dkms.
+
+ -- Ian May <ianm@nvidia.com>  Thu, 20 Mar 2025 09:11:47 -0500
+
 knem (1.1.4.90mlnx3-OFED.23.10.0.2.1.1) unstable; urgency=low
 
   * Initial release. Closes: #194736
