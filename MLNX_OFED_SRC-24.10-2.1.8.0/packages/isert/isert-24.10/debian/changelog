@@ -1,3 +1,15 @@
+isert (24.10-OFED.24.10.2.1.8.1+2) noble; urgency=medium
+
+  * Add Build-Depends dh-dkms.
+
+ -- Ian May <ianm@nvidia.com>  Wed, 19 Mar 2025 17:33:28 -0500
+
+isert (24.10-OFED.24.10.2.1.8.1+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Wed, 19 Mar 2025 17:11:52 -0500
+
 isert (24.10-OFED.24.10.2.1.8.1) unstable; urgency=low
 
   * Initial release.
