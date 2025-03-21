@@ -2,7 +2,7 @@ Source: kernel-mft
 Section: kernel
 Priority: optional
 Maintainer: Itay Avraham <itayavr@nvidia.com>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev, bzip2, dkms
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, bzip2, dkms, dh-dkms
 Standards-Version: 4.30.1
 Homepage: http://www.mellanox.com
 
