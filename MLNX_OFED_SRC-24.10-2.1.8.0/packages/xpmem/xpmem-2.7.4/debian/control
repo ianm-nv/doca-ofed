@@ -3,7 +3,7 @@
 Source: xpmem
 Priority: optional
 Maintainer: Tzafrir Cohen <nvidia@cohens.org.il>
-Build-Depends: debhelper (>= 10)
+Build-Depends: debhelper (>= 10), dkms, dh-dkms, linux-headers-generic | linux-headers
 Standards-Version: 4.4.1
 Section: kernel
 Homepage: https://github.com/openucx/xpmem/

@@ -19,7 +19,7 @@ WITH_MODULES = $(filter modules,${DEB_BUILD_PROFILES})
 
 kernel_source_args = 
 ifeq "" "$(filter command environment,$(origin kernelver))"
-kernelver = $(shell uname -r)
+kernelver = $(shell find /lib/modules/ -name build | cut -d '/' -f 4 | sort | tail -1)
 else
 kernel_source_args += --with-kernelvers=$(kernelver)
 endif
