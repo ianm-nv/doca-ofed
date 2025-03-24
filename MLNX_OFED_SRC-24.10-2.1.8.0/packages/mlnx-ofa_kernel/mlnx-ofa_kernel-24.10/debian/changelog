@@ -1,3 +1,10 @@
+mlnx-ofed-kernel (24.10-OFED.24.10.2.1.8.1+1) noble; urgency=medium
+
+  * Prepare for signing.
+  * Add Build-Depends dh-dkms.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 11:02:32 -0500
+
 mlnx-ofed-kernel (24.10-OFED.24.10.2.1.8.1) unstable; urgency=low
 
   * Initial release (Closes: #125306)
