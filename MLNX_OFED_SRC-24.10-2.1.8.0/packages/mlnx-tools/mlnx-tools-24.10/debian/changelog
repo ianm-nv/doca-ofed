@@ -1,4 +1,10 @@
-mlnx-tools (24.10-OFED.24.10.0.4.9) UNRELEASED; urgency=medium
+mlnx-tools (24.10-OFED.24.10.0.4.9+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 12:11:06 -0500
+
+mlnx-tools (24.10-OFED.24.10.0.4.9) noble; urgency=medium
 
   * New release cycle.
 
