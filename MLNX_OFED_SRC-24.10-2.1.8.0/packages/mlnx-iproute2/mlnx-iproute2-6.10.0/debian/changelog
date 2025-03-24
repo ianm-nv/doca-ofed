@@ -1,3 +1,9 @@
+mlnx-iproute2 (6.10.0-OFED.24.10.2.1.3+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 10:49:30 -0500
+
 mlnx-iproute2 (6.10.0-OFED.24.10.2.1.3) unstable; urgency=low
 
   * Add debian support.
