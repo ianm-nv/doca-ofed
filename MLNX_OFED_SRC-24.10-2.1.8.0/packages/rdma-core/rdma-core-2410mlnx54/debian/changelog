@@ -1,3 +1,9 @@
+rdma-core (2410mlnx54-OFED.24.10.0.6.0+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 14:13:04 -0500
+
 rdma-core (2410mlnx54-OFED.24.10.0.6.0) unstable; urgency=low
 
   * New MLNX_OFED version.
