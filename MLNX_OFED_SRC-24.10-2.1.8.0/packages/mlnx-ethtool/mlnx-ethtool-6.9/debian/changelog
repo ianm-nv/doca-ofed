@@ -1,3 +1,9 @@
+mlnx-ethtool (6.9-OFED.24.07.0.1.9+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 10:45:59 -0500
+
 mlnx-ethtool (6.9-OFED.24.07.0.1.9) unstable; urgency=low
 
   * Add debian support.
