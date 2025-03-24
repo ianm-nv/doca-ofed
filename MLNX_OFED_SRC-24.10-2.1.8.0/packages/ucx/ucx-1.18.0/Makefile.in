@@ -298,7 +298,7 @@ DIST_SUBDIRS = src/ucm src/ucs src/uct src/ucp @UCG_SUBDIR@ \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/docs/doxygen/doxygen.am $(srcdir)/ucx.pc.in \
 	$(srcdir)/ucx.spec.in $(top_srcdir)/contrib/rpmdef.sh.in \
-	$(top_srcdir)/contrib/ucx.in $(top_srcdir)/debian/changelog.in \
+	$(top_srcdir)/contrib/ucx.in $(top_srcdir)/debian/changelog \
 	$(top_srcdir)/debian/control.in $(top_srcdir)/debian/rules.in \
 	$(top_srcdir)/docs/doxygen/header.tex.in \
 	$(top_srcdir)/src/ucp/api/ucp_version.h.in \
@@ -722,7 +722,7 @@ debian/rules: $(top_builddir)/config.status $(top_srcdir)/debian/rules.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 debian/control: $(top_builddir)/config.status $(top_srcdir)/debian/control.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog.in
+debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/ucp/api/ucp_version.h: $(top_builddir)/config.status $(top_srcdir)/src/ucp/api/ucp_version.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

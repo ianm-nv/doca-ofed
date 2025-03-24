@@ -1,3 +1,10 @@
+ucx (1.18.152bf42+1) noble; urgency=medium
+
+  * Prepare for signing.
+  * Change reference from changelog.in to changelog.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 15:03:18 -0500
+
 ucx (1.18.152bf42) unstable; urgency=low
 
   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
