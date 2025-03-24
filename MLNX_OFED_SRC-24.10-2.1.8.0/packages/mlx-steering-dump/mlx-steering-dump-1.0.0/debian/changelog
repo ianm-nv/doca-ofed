@@ -1,3 +1,9 @@
+mlx-steering-dump (1.0.0-OFED.23.04.0.3.8+1) noble; urgency=medium
+
+  * Prepare for signing.
+
+ -- Ian May <ianm@nvidia.com>  Fri, 21 Mar 2025 12:13:49 -0500
+
 mlx-steering-dump (1.0.0-OFED.23.04.0.3.8) unstable; urgency=low
 
   [ Mohammad Kabat ]
