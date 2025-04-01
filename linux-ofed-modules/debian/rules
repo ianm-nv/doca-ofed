@@ -1,0 +1,67 @@
+#!/usr/bin/make -f
+
+SHELL=/bin/bash -e
+
+DEBIAN=debian
+
+SERIES=$(shell dpkg-parsechangelog -l$(DEBIAN)/changelog -SDistribution | sed -e 's/-\(security\|updates\|proposed\)$$//')
+SOURCE=$(shell dpkg-parsechangelog -l$(DEBIAN)/changelog -SSource)
+
+VERSION=$(shell dpkg-parsechangelog -l$(DEBIAN)/changelog -SVersion)
+KERNEL_ABI_VERSION=$(shell echo "$(VERSION)" | sed -ne 's/\([0-9]*\.[0-9]*\.[0-9]*\-[0-9]*\)\..*/\1/p')
+KERNEL_MAIN_VERSION=$(shell echo "$(VERSION)" | sed -e 's/\+[0-9][0-9]*$$//')
+KERNEL_META_VERSION=$(shell echo "$(KERNEL_ABI_VERSION)" | sed -e 's/-/./')
+
+DEB_HOST_ARCH=$(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+dkms_packages=$(shell dkms status | awk 'BEGIN {FS="[ ,:][ ,:]*"} {print($$1 "/" $$2)}')
+
+FLAVOURS=nvidia
+
+clean: debian/control
+	dh_testdir
+	dh_testroot
+	rm -rf debian/tmp SIGNING BUILD
+	dh_clean
+
+debian/control:
+	sed <$(DEBIAN)/control.stub >debian/control			\
+		-e 's/@SERIES@/$(SERIES)/g'				\
+		-e 's/@KERNEL_ABI_VERSION@/$(KERNEL_ABI_VERSION)/g'	\
+		-e 's/@SRCPKGNAME@/$(SOURCE)/g'				\
+		-e 's/@KERNEL_MAIN_VERSION@/$(KERNEL_MAIN_VERSION)/g'	\
+		-e 's/@KERNEL_META_VERSION@/$(KERNEL_META_VERSION)/g'	\
+
+.PHONY: debian/control
+
+%:
+	dh $@
+
+override_dh_auto_build: signing = $(CURDIR)/SIGNING
+override_dh_auto_build: signingv = $(signing)/$(VERSION)
+override_dh_auto_build: signing_tar = $(SOURCE)_$(VERSION)_$(DEB_HOST_ARCH).tar.gz
+override_dh_auto_build: dkmstree = $(CURDIR)/BUILD
+override_dh_auto_build: kernel = $(KERNEL_ABI_VERSION)-nvidia
+override_dh_auto_build: modules = /lib/modules/$(kernel)/updates/dkms/
+override_dh_auto_build:
+	install -d $(signingv)/control
+	{ echo "tarball"; } >$(signingv)/control/options
+
+	@echo "v- DKMS packages"
+	dkms status
+	@echo "^- DKMS packages"
+	@echo "v- DKMS .ko files"
+	find $(modules) -name \*.ko -print
+	@echo "^- DKMS .ko files"
+	(cd $(modules) && find . -name \*.ko -print) | \
+	while read ko; \
+	do \
+		mkdir -p "$(signingv)/$$(dirname "$$ko")"; \
+		cp -p "$(modules)/$$ko" "$(signingv)/$$(dirname "$$ko")"; \
+	done
+	@echo "v- signables"
+	ls -R $(signing)
+	@echo "^- signables"
+	#echo "SIGNING" >debian/linux-ofed-modules-dkms-test.install
+	cd $(signing) && tar czvf ../../$(signing_tar) .
+	dpkg-distaddfile $(signing_tar) raw-signing -

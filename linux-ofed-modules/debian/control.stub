@@ -1,0 +1,27 @@
+Source: @SRCPKGNAME@
+Section: devel
+Priority: optional
+Maintainer: Ian May <ianm@nvidia.com>
+Standards-Version: 3.9.8
+Build-Depends:
+ dpkg (>= 1.13.19),
+ debhelper (>= 10),
+Build-Depends-Arch:
+ fakeroot,
+ dkms,
+ linux-headers-nvidia-6.11,
+  cpio,
+ iser-dkms,
+ isert-dkms,
+ kernel-mft-dkms,
+ knem-dkms,
+ mlnx-nfsrdma-dkms,
+ mlnx-ofed-kernel-dkms,
+ srp-dkms,
+Vcs-Git: git://git.launchpad.net/~canonical-kernel/+git/@SERIES@-@SRCPKGNAME@
+
+Package: @SRCPKGNAME@
+Architecture: arm64
+Section: devel
+Priority: optional
+Description: Build interlock package. You do not want to install this package.

@@ -1,0 +1,17 @@
+linux-ofed-modules (6.11.0-1003.3+3) noble; urgency=medium
+
+  * Fix kernel module path.
+
+ -- Ian May <ianm@nvidia.com>  Tue, 01 Apr 2025 00:53:56 -0500
+
+linux-ofed-modules (6.11.0-1003.3+2) noble; urgency=medium
+
+  * Remove version contraint.
+
+ -- Ian May <ianm@nvidia.com>  Tue, 01 Apr 2025 00:37:09 -0500
+
+linux-ofed-modules (6.11.0-1003.3+1) noble; urgency=medium
+
+  * Initial packaging.
+
+ -- Ian May <ianm@nvidia.com>  Mon, 31 Mar 2025 16:25:21 -0500
