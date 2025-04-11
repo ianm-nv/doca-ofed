@@ -1,0 +1,71 @@
+#! /usr/bin/make -f
+
+SOURCE=$(shell dpkg-parsechangelog -S Source)
+VERSION=$(shell dpkg-parsechangelog -S Version)
+ABI=$(shell echo "$(VERSION)" | sed -ne 's/\([0-9]*\.[0-9]*\.[0-9]*\-[0-9]*\)\..*/\1/p')
+
+# Work out the source package name and version of the unsigned package
+# By convention, it is the name of this package with -signed stripped.
+# The version is required to be identical to this package.
+UNSIGNED_SRC=$(shell echo $(SOURCE) | sed -e 's/-signed//')
+UNSIGNED_VER=$(VERSION)
+
+FLAVOUR=nvidia
+
+clean: debian/control
+	dh_testdir
+	dh_testroot
+	rm -rf ./$(UNSIGNED_VER)
+	dh_clean
+
+debian/control:
+	sed <debian/control.stub >debian/control		\
+		-e "s/@ABI@/$(ABI)/g"				\
+		-e "s/@UNSIGNED_SRC_PACKAGE@/$(UNSIGNED_SRC)/g"	\
+		-e "s/@UNSIGNED_SRC_VERSION@/$(UNSIGNED_VER)/g"	\
+		-e 's/@SRCPKGNAME@/$(SOURCE)/g'
+
+.PHONY: debian/control
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	./download-signed "$(UNSIGNED_SRC)" "$(UNSIGNED_VER)" "$(UNSIGNED_SRC)"
+
+ifeq ($(arch),ppc64el)
+instfile=vmlinux
+else
+instfile=vmlinuz
+endif
+
+define install_control =
+	for which in $(3);							\
+	do									\
+		template="debian/templates/$$which.in";				\
+		script="debian/$(1).$$which";					\
+		sed -e 's/@abiname@/$(ABI)/g'					\
+		    -e 's/@localversion@/-$(2)/g'				\
+		    -e 's/@image-stem@/$(instfile)/g'				\
+			<"$$template" >"$$script";				\
+	done
+endef
+
+override_dh_auto_install:
+	find "$(UNSIGNED_VER)" -name "*.ko" -print |					\
+	while read path; do								\
+		module=$$(basename "$$path");						\
+		instpath="$${path#$(UNSIGNED_VER)/ofed-modules/}";			\
+		instpath=$$(dirname "$$instpath");					\
+		package="$(UNSIGNED_SRC)-$(ABI)-$(FLAVOUR)";				\
+		cp $$path $$path.tmp;							\
+		cat $$path.tmp $$path.sig >$$path;					\
+		rm $$path.tmp;								\
+		echo "$$package: adding $$module";					\
+		echo "$$path /lib/modules/$(ABI)-$(FLAVOUR)/updates/ofed/$$instpath"	\
+			>>"debian/$$package.install";					\
+	done
+	install -d $(UNSIGNED_SRC)-$(ABI)-$(FLAVOUR)
+	install -d $(UNSIGNED_SRC)-$(ABI)-$(FLAVOUR)
+	$(call install_control,$(UNSIGNED_SRC)-$(ABI)-$(FLAVOUR),nvidia,postinst postrm)
+	dh_install

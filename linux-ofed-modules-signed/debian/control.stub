@@ -1,0 +1,26 @@
+Source: @SRCPKGNAME@
+Section: kernel
+Priority: optional
+Maintainer: Ian May <ianm@nvidia.com>
+Build-Depends: debhelper (>= 10)
+Build-Depends-Arch:
+ @UNSIGNED_SRC_PACKAGE@ (= @UNSIGNED_SRC_VERSION@),
+ python3,
+ python3-apt,
+Standards-Version: 3.9.4
+
+Package: linux-ofed-modules-@ABI@-nvidia
+Architecture: arm64
+Build-Profiles: <!stage1>
+Section: kernel
+Depends: ${misc:Depends}, ${shlibs:Depends}, kmod, linux-image-@ABI@-nvidia | linux-image-unsigned-@ABI@-nvidia
+Description: Signed ofed modules
+ Signed ofed modules for use with the nvidia kernel.
+
+Package: linux-ofed-modules-nvidia
+Architecture: arm64
+Build-Profiles: <!stage1>
+Section: kernel
+Depends: ${misc:Depends}, linux-ofed-modules-@ABI@-nvidia
+Description: Extra drivers for ofed for the nvidia flavour.
+ Install extra signed ofed modules compatible with the nvidia flavour.
